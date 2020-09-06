@@ -1,10 +1,15 @@
 ---
 # tasks file for ansible-role-docker-alpine
+- name: enable community repo
+  replace:
+    path: /etc/apk/repositories
+    regexp: '^#(.*v\d.*\/community)'
+    replace: '\1'
 - name: install docker
-    apk:
-      name: docker
-      update_cache: true
-      state: latest
+  apk:
+    name: docker
+    update_cache: true
+    state: latest
 - name: create docker group
   group:
     name: docker
