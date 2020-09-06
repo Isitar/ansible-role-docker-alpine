@@ -1,0 +1,28 @@
+---
+# tasks file for ansible-role-docker-alpine
+- name: install docker
+    apk:
+      name: docker
+      update_cache: true
+      state: latest
+- name: create docker group
+  group:
+    name: docker
+    state: present
+- name: add user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+- name: make mount rshared
+  lineinfile:
+    path: /etc/init.d/docker
+    regexp: '^\tmount --make-rshared \/'
+    insertafter: 'start_pre\(\) {'
+    line: "\tmount --make-rshared /"
+  notify: restart_docker
+- name: startup docker and set boot enabled
+  service:
+    name: docker
+    enabled: true
+    state: started
